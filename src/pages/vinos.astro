@@ -1,0 +1,40 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import WineCard from '../components/WineCard.astro';
+import { getWinesInInventory } from '../data/inventory';
+
+const winesInInventory = await getWinesInInventory();
+---
+
+<BaseLayout title="Listado de Vinos - Cellavinaria">
+  <main class="container mx-auto px-4 py-8">
+    <header class="mb-8">
+      <h1 class="text-4xl font-bold mb-2 text-wine-900">Listado de Vinos</h1>
+      <p class="text-gray-600">
+        {winesInInventory.length} vinos actualmente en vinotecas
+      </p>
+      <nav class="mt-4">
+        <a
+          href="/"
+          class="text-wine-700 hover:text-wine-900 underline"
+        >
+          ← Volver a vista de vinotecas
+        </a>
+      </nav>
+    </header>
+
+    <section>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {winesInInventory.map(wineWithLocation => (
+          <WineCard wineWithLocation={wineWithLocation} />
+        ))}
+      </div>
+
+      {winesInInventory.length === 0 && (
+        <div class="text-center py-12">
+          <p class="text-gray-500 text-lg">No hay vinos en las vinotecas actualmente.</p>
+        </div>
+      )}
+    </section>
+  </main>
+</BaseLayout>

@@ -1,0 +1,39 @@
+---
+import { vinotecas, getWineAtPosition } from '../data/vinotecas';
+import { inventory } from '../data/inventory';
+import { getCollection } from 'astro:content';
+import RackPosition from './RackPosition.astro';
+import type { VinotecaId } from '../data/inventory';
+
+interface Props {
+  vinotecaId: VinotecaId;
+}
+
+const { vinotecaId } = Astro.props;
+const vinoteca = vinotecas[vinotecaId];
+const allWines = await getCollection('wines');
+const wineMap = new Map(allWines.map(w => [w.slug, w]));
+
+// Calcular ocupación
+const occupied = Object.values(inventory[vinotecaId]).filter(Boolean).length;
+---
+
+<section class="mb-12">
+  <div class="flex justify-between items-center mb-4">
+    <h2 class="text-2xl font-bold text-wine-900">{vinoteca.nombre}</h2>
+    <span class="text-sm text-gray-600 bg-white px-3 py-1 rounded-full border border-gray-200">
+      {occupied}/{vinoteca.capacidad} botellas
+    </span>
+  </div>
+
+  <div
+    class="grid gap-2 max-w-4xl"
+    style={`grid-template-columns: repeat(${vinoteca.columnas}, minmax(0, 1fr));`}
+  >
+    {vinoteca.layout.flat().map(posicion => {
+      const wineSlug = getWineAtPosition(vinotecaId, posicion);
+      const wine = wineSlug ? wineMap.get(wineSlug) : null;
+      return <RackPosition posicion={posicion} wine={wine} vinotecaId={vinotecaId} />;
+    })}
+  </div>
+</section>

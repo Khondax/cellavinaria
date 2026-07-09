@@ -1,0 +1,40 @@
+---
+import type { Wine } from '../types/wine';
+import type { VinotecaId } from '../data/inventory';
+
+interface Props {
+  posicion: number;
+  wine: Wine | null;
+  vinotecaId: VinotecaId;
+}
+
+const { posicion, wine, vinotecaId } = Astro.props;
+---
+
+<div
+  class={`
+    aspect-square border-2 rounded-lg p-2 cursor-pointer transition-all
+    ${wine
+      ? 'bg-white border-wine-300 hover:border-wine-500 hover:shadow-lg'
+      : 'bg-gray-50 border-gray-200 hover:border-gray-300'}
+  `}
+  data-wine-slug={wine?.slug}
+  data-posicion={posicion}
+  data-vinoteca={vinotecaId}
+>
+  {wine ? (
+    <div class="flex flex-col items-center justify-center h-full">
+      <div class="w-16 h-16 mb-1 flex items-center justify-center bg-wine-100 rounded">
+        <span class="text-3xl">🍷</span>
+      </div>
+      <span class="text-xs font-medium text-center line-clamp-2">
+        {wine.data.nombre}
+      </span>
+      <span class="text-xs text-gray-500">Pos. {posicion}</span>
+    </div>
+  ) : (
+    <div class="flex items-center justify-center h-full text-gray-400">
+      <span class="text-sm font-mono">{posicion}</span>
+    </div>
+  )}
+</div>

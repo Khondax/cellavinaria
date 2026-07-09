@@ -1,0 +1,24 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import VinotecaRackView from '../components/VinotecaRackView.astro';
+---
+
+<BaseLayout title="Cellavinaria - Mis Vinotecas">
+  <main class="container mx-auto px-4 py-8">
+    <header class="mb-8">
+      <h1 class="text-4xl font-bold mb-2 text-wine-900">Mis Vinotecas</h1>
+      <p class="text-gray-600">Estado actual de tu colección de vinos</p>
+      <nav class="mt-4">
+        <a
+          href="/vinos"
+          class="text-wine-700 hover:text-wine-900 underline"
+        >
+          Ver listado completo con filtros →
+        </a>
+      </nav>
+    </header>
+
+    <VinotecaRackView vinotecaId="gran-canaria" />
+    <VinotecaRackView vinotecaId="santander" />
+  </main>
+</BaseLayout>
