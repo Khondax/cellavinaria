@@ -267,7 +267,7 @@ export default function WineExplorer({ wines, vinotecas }: Props) {
           {/* Fecha de toma */}
           <div>
             <label for="anio" class="mb-1 block text-sm font-medium text-wine-900/80">
-              Disponible en el año
+              Fecha de toma ideal
             </label>
             <select
               id="anio"
