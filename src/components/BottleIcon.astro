@@ -1,0 +1,32 @@
+---
+interface Props {
+  class?: string;
+}
+
+const { class: className = '' } = Astro.props;
+---
+
+<!-- Botella estilizada; el vidrio usa currentColor, el líquido un tono más oscuro -->
+<svg
+  viewBox="0 0 24 64"
+  fill="none"
+  aria-hidden="true"
+  class={className}
+>
+  <!-- Cuerpo -->
+  <path
+    d="M9 2h6v10c0 1.2 .5 1.8 1.4 2.7C18 17 19 19 19 23v33a4 4 0 0 1-4 4H9a4 4 0 0 1-4-4V23c0-4 1-6 2.6-8.3C8.5 13.8 9 13.2 9 12V2Z"
+    fill="currentColor"
+    opacity="0.9"
+  ></path>
+  <!-- Líquido (parte inferior) -->
+  <path
+    d="M5 30c1.5 1.2 3.8 2 7 2s5.5-.8 7-2v26a4 4 0 0 1-4 4H9a4 4 0 0 1-4-4V30Z"
+    fill="currentColor"
+    opacity="0.55"
+  ></path>
+  <!-- Cuello / corcho -->
+  <rect x="9" y="1" width="6" height="4" rx="1" fill="currentColor"></rect>
+  <!-- Brillo -->
+  <rect x="8" y="26" width="2" height="26" rx="1" fill="#fff" opacity="0.25"></rect>
+</svg>

@@ -3,21 +3,22 @@ import { glob } from 'astro/loaders';
 
 const wines = defineCollection({
   loader: glob({ pattern: '*.mdx', base: './src/content/wines' }),
-  schema: z.object({
+  schema: ({ image }) => z.object({
     nombre: z.string(),
     tipoUva: z.string(),
     variedad: z.enum(['tinto', 'blanco', 'rosado', 'espumoso', 'otro']),
     bodega: z.string(),
     region: z.string(),
     pais: z.string(),
-    precio: z.number().positive(),
-    puntuacion: z.number().min(1).max(10).optional(),
+    precio: z.number().positive().optional().nullable(),
+    puntuacion: z.number().min(1).max(10).optional().nullable(),
     fechaToma: z.object({
       inicio: z.number().int().min(2020),
       fin: z.number().int().min(2020),
     }).refine(data => data.fin >= data.inicio, {
       message: "Año fin debe ser mayor o igual al año inicio"
     }),
+    imagen: image().optional(),
   }),
 });
 

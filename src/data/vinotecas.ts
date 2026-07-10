@@ -11,6 +11,21 @@ export interface Vinoteca {
 }
 
 export const vinotecas: Record<VinotecaId, Vinoteca> = {
+  'santander': {
+    id: 'santander',
+    nombre: 'Vinoteca Santander',
+    capacidad: 28,
+    filas: 6,
+    columnas: 5,
+    layout: [
+      [1, 2, 3, 4, 5],
+      [6, 7, 8, 9, 10],
+      [11, 12, 13, 14, 15],
+      [16, 17, 18, 19, 20],
+      [21, 22, 23, 24, 25],
+      [26, 27, 28],
+    ],
+  },
   'gran-canaria': {
     id: 'gran-canaria',
     nombre: 'Vinoteca Gran Canaria',
@@ -21,21 +36,6 @@ export const vinotecas: Record<VinotecaId, Vinoteca> = {
       [1, 2, 3, 4, 5, 6],
       [7, 8, 9, 10, 11, 12],
       [13, 14, 15, 16, 17, 18],
-    ],
-  },
-  'santander': {
-    id: 'santander',
-    nombre: 'Vinoteca Santander',
-    capacidad: 30,
-    filas: 6,
-    columnas: 5,
-    layout: [
-      [1, 2, 3, 4, 5],
-      [6, 7, 8, 9, 10],
-      [11, 12, 13, 14, 15],
-      [16, 17, 18, 19, 20],
-      [21, 22, 23, 24, 25],
-      [26, 27, 28, 29, 30],
     ],
   },
 };

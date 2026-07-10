@@ -1,40 +1,69 @@
 ---
+import { getImage } from 'astro:assets';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import WineCard from '../components/WineCard.astro';
+import WineExplorer from '../components/WineExplorer';
+import type { WineItem, VinotecaMeta } from '../components/WineExplorer';
 import { getWinesInInventory } from '../data/inventory';
+import { vinotecas, getRowCol } from '../data/vinotecas';
+import { parseUvas } from '../lib/wine';
 
 const winesInInventory = await getWinesInInventory();
+
+const wines: WineItem[] = await Promise.all(
+  winesInInventory.map(async ({ wine, vinoteca, posicion }) => {
+    const { fila, columna } = getRowCol(posicion, vinotecas[vinoteca]);
+    const imagen = wine.data.imagen
+      ? (await getImage({ src: wine.data.imagen, width: 320 })).src
+      : null;
+    return {
+      id: wine.id,
+      nombre: wine.data.nombre,
+      tipoUva: wine.data.tipoUva,
+      uvas: parseUvas(wine.data.tipoUva),
+      variedad: wine.data.variedad,
+      bodega: wine.data.bodega,
+      region: wine.data.region,
+      pais: wine.data.pais,
+      precio: wine.data.precio ?? null,
+      puntuacion: wine.data.puntuacion ?? null,
+      fechaInicio: wine.data.fechaToma.inicio,
+      fechaFin: wine.data.fechaToma.fin,
+      vinotecaId: vinoteca,
+      posicion,
+      fila,
+      columna,
+      imagen,
+    };
+  }),
+);
+
+const vinotecasMeta: VinotecaMeta[] = Object.values(vinotecas).map((v) => ({
+  id: v.id,
+  nombre: v.nombre,
+  capacidad: v.capacidad,
+  columnas: v.columnas,
+  layout: v.layout,
+}));
 ---
 
-<BaseLayout title="Listado de Vinos - Cellavinaria">
-  <main class="container mx-auto px-4 py-8">
+<BaseLayout
+  title="Listado de Vinos · Cella Vinaria"
+  description="Explora y filtra los vinos disponibles en tus vinotecas."
+>
+  <div class="mx-auto max-w-6xl px-4 py-10 sm:px-6">
     <header class="mb-8">
-      <h1 class="text-4xl font-bold mb-2 text-wine-900">Listado de Vinos</h1>
-      <p class="text-gray-600">
-        {winesInInventory.length} vinos actualmente en vinotecas
+      <p class="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-gold-600">
+        Colección disponible
       </p>
-      <nav class="mt-4">
-        <a
-          href="/"
-          class="text-wine-700 hover:text-wine-900 underline"
-        >
-          ← Volver a vista de vinotecas
-        </a>
-      </nav>
+      <h1 class="font-display text-4xl font-semibold text-wine-800 sm:text-5xl">
+        Listado de Vinos
+      </h1>
+      <p class="mt-2 max-w-prose text-wine-900/60">
+        {wines.length} vinos actualmente en tus vinotecas. Filtra por variedad, origen,
+        precio, puntuación y ubicación.
+      </p>
     </header>
 
-    <section>
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {winesInInventory.map(wineWithLocation => (
-          <WineCard wineWithLocation={wineWithLocation} />
-        ))}
-      </div>
-
-      {winesInInventory.length === 0 && (
-        <div class="text-center py-12">
-          <p class="text-gray-500 text-lg">No hay vinos en las vinotecas actualmente.</p>
-        </div>
-      )}
-    </section>
-  </main>
+    <WineExplorer client:load wines={wines} vinotecas={vinotecasMeta} />
+  </div>
 </BaseLayout>

@@ -1,4 +1,4 @@
-# 🍷 Cellavinaria
+# 🍷 Cella Vinaria
 
 Gestión personal de bodega de vinos con **Astro 7 + Tailwind CSS + Preact**. Visualiza tu colección de vinos organizados en vinotecas físicas, con filtros avanzados y gestión de inventario.
 

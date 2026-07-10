@@ -1,24 +1,54 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import VinotecaRackView from '../components/VinotecaRackView.astro';
+import { vinotecas } from '../data/vinotecas';
+import { inventory } from '../data/inventory';
+
+const ids = Object.keys(vinotecas) as (keyof typeof vinotecas)[];
+const totalCapacidad = ids.reduce((sum, id) => sum + vinotecas[id].capacidad, 0);
+const totalOcupadas = ids.reduce(
+  (sum, id) => sum + Object.values(inventory[id]).filter(Boolean).length,
+  0,
+);
 ---
 
-<BaseLayout title="Cellavinaria - Mis Vinotecas">
-  <main class="container mx-auto px-4 py-8">
-    <header class="mb-8">
-      <h1 class="text-4xl font-bold mb-2 text-wine-900">Mis Vinotecas</h1>
-      <p class="text-gray-600">Estado actual de tu colección de vinos</p>
-      <nav class="mt-4">
+<BaseLayout
+  title="Cella Vinaria · Mis Vinotecas"
+  description="Estado actual de tu colección personal de vinos, vinoteca a vinoteca."
+>
+  <div class="mx-auto max-w-6xl px-4 py-10 sm:px-6">
+    <!-- Hero -->
+    <header class="reveal mb-12">
+      <p class="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-gold-600">
+        Bodega personal
+      </p>
+      <h1
+        class="font-display text-5xl font-semibold leading-[1.05] text-wine-800 sm:text-6xl"
+      >
+        Mis Vinotecas
+      </h1>
+      <p class="mt-4 max-w-prose text-lg text-wine-900/60">
+        El estado actual de tu colección, botella a botella. Pasa el cursor por cada
+        posición para ver el vino que la ocupa.
+      </p>
+
+      <div class="mt-6 flex flex-wrap items-center gap-3">
         <a
           href="/vinos"
-          class="text-wine-700 hover:text-wine-900 underline"
+          class="inline-flex items-center gap-2 rounded-full bg-wine-700 px-5 py-2.5 text-sm font-semibold text-cream-50 shadow-sm transition-colors hover:bg-wine-800"
         >
-          Ver listado completo con filtros →
+          Explorar el listado con filtros
+          <span aria-hidden="true">→</span>
         </a>
-      </nav>
+        <span
+          class="inline-flex items-center gap-2 rounded-full border border-cream-300 bg-white/60 px-4 py-2 text-sm text-wine-900/70"
+        >
+          <span class="h-2 w-2 rounded-full bg-wine-600"></span>
+          {totalOcupadas} de {totalCapacidad} posiciones ocupadas
+        </span>
+      </div>
     </header>
 
-    <VinotecaRackView vinotecaId="gran-canaria" />
-    <VinotecaRackView vinotecaId="santander" />
-  </main>
+    {ids.map((id) => <VinotecaRackView vinotecaId={id} />)}
+  </div>
 </BaseLayout>

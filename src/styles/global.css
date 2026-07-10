@@ -1,0 +1,150 @@
+@import "tailwindcss";
+
+/* ==========================================================================
+   Cella Vinaria — Sistema de diseño (Tailwind v4, config CSS-first)
+   Dirección: editorial / vino refinado. Burdeos dominante, crema cálida,
+   acento dorado. Titulares serif (Fraunces), UI/datos sans (Figtree).
+   ========================================================================== */
+
+@theme {
+  /* Tipografía */
+  --font-sans: "Figtree", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Fraunces", ui-serif, Georgia, "Times New Roman", serif;
+
+  /* Paleta burdeos (marca) */
+  --color-wine-50: #fbf3f5;
+  --color-wine-100: #f6e3e8;
+  --color-wine-200: #eec3d0;
+  --color-wine-300: #e199ae;
+  --color-wine-400: #cf6485;
+  --color-wine-500: #b83e64;
+  --color-wine-600: #9c2850;
+  --color-wine-700: #7d1d42;
+  --color-wine-800: #691b3b;
+  --color-wine-900: #591935;
+  --color-wine-950: #350a1d;
+
+  /* Neutro cálido (crema / pergamino) */
+  --color-cream-50: #fdfbf7;
+  --color-cream-100: #faf5ec;
+  --color-cream-200: #f3ebda;
+  --color-cream-300: #e8dabf;
+  --color-cream-400: #d8c39c;
+
+  /* Acento dorado (puntuaciones, detalles) */
+  --color-gold-300: #e3c579;
+  --color-gold-400: #d4a54a;
+  --color-gold-500: #bd8a2c;
+  --color-gold-600: #9a6d1f;
+
+  /* Madera (marco y baldas del mueble de la vinoteca) — roble cálido, suave */
+  --color-wood-600: #a67c56;
+  --color-wood-700: #916b4b;
+  --color-wood-800: #7a5940;
+  --color-wood-900: #614735;
+  --color-wood-950: #4a3628;
+
+  /* Animaciones de entrada (reveal escalonado) */
+  --animate-fade-in-up: fade-in-up 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-fade-in: fade-in 0.4s ease-out both;
+}
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* ---------------------------------------------------------------- Base --- */
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    color: var(--color-wine-950);
+    background-color: var(--color-cream-100);
+    /* Fondo con atmósfera: tinte burdeos muy sutil arriba sobre crema */
+    background-image:
+      radial-gradient(
+        60rem 40rem at 85% -10%,
+        rgba(156, 40, 80, 0.08),
+        transparent 60%
+      ),
+      radial-gradient(
+        50rem 40rem at -10% 0%,
+        rgba(212, 165, 74, 0.07),
+        transparent 55%
+      );
+    background-attachment: fixed;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    font-optical-sizing: auto;
+    letter-spacing: -0.015em;
+  }
+
+  /* Foco visible accesible y consistente (WCAG 2.4.7) */
+  :focus-visible {
+    outline: 2px solid var(--color-wine-600);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+}
+
+/* ------------------------------------------------------------ Utilities --- */
+
+@layer utilities {
+  /* Contenido solo para lectores de pantalla */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+
+  /* Reveal escalonado en carga */
+  .reveal {
+    animation: var(--animate-fade-in-up);
+  }
+}
+
+/* Respetar preferencia de movimiento reducido */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

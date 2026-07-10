@@ -12,28 +12,78 @@ interface Props {
 const { vinotecaId } = Astro.props;
 const vinoteca = vinotecas[vinotecaId];
 const allWines = await getCollection('wines');
-const wineMap = new Map(allWines.map(w => [w.slug, w]));
+const wineMap = new Map(allWines.map((w) => [w.id, w]));
 
-// Calcular ocupación
 const occupied = Object.values(inventory[vinotecaId]).filter(Boolean).length;
+const pct = Math.round((occupied / vinoteca.capacidad) * 100);
+const tipo = `Rack ${vinoteca.filas}×${vinoteca.columnas}`;
 ---
 
-<section class="mb-12">
-  <div class="flex justify-between items-center mb-4">
-    <h2 class="text-2xl font-bold text-wine-900">{vinoteca.nombre}</h2>
-    <span class="text-sm text-gray-600 bg-white px-3 py-1 rounded-full border border-gray-200">
-      {occupied}/{vinoteca.capacidad} botellas
-    </span>
+<section class="reveal mb-14">
+  <div
+    class="mb-5 flex flex-wrap items-end justify-between gap-4 border-b border-cream-300 pb-4"
+  >
+    <div>
+      <p class="mb-1 text-xs font-semibold uppercase tracking-[0.18em] text-gold-600">
+        {tipo} · {vinoteca.capacidad} botellas
+      </p>
+      <h2 class="font-display text-3xl font-semibold text-wine-800">
+        {vinoteca.nombre}
+      </h2>
+    </div>
+
+    <div class="min-w-[11rem]">
+      <div class="mb-1 flex items-baseline justify-between text-sm">
+        <span class="font-medium text-wine-900/70">Ocupación</span>
+        <span class="font-semibold tabular-nums text-wine-800">
+          {occupied}<span class="text-wine-900/40">/{vinoteca.capacidad}</span>
+        </span>
+      </div>
+      <div
+        class="h-2 overflow-hidden rounded-full bg-cream-300"
+        role="progressbar"
+        aria-valuenow={occupied}
+        aria-valuemin="0"
+        aria-valuemax={vinoteca.capacidad}
+        aria-label={`Ocupación de ${vinoteca.nombre}`}
+      >
+        <div
+          class="h-full rounded-full bg-gradient-to-r from-wine-500 to-wine-700 transition-all"
+          style={`width: ${pct}%`}
+        >
+        </div>
+      </div>
+    </div>
   </div>
 
+  <!-- Mueble de madera: marco exterior + baldas apiladas -->
   <div
-    class="grid gap-2 max-w-4xl"
-    style={`grid-template-columns: repeat(${vinoteca.columnas}, minmax(0, 1fr));`}
+    class="overflow-hidden rounded-2xl border-4 border-wood-800 bg-gradient-to-b from-wood-600 to-wood-800 p-3 shadow-xl sm:p-4"
   >
-    {vinoteca.layout.flat().map(posicion => {
-      const wineSlug = getWineAtPosition(vinotecaId, posicion);
-      const wine = wineSlug ? wineMap.get(wineSlug) : null;
-      return <RackPosition posicion={posicion} wine={wine} vinotecaId={vinotecaId} />;
-    })}
+    <div class="space-y-2.5 sm:space-y-3">
+      {
+        vinoteca.layout.map((row) => (
+          <div>
+            <div class="flex justify-center gap-3">
+              {row.map((posicion) => {
+                const wineSlug = getWineAtPosition(vinotecaId, posicion);
+                const wine = wineSlug ? (wineMap.get(wineSlug) ?? null) : null;
+                return (
+                  <div
+                    style={`flex: 0 0 calc((100% - ${vinoteca.columnas - 1} * 0.75rem) / ${vinoteca.columnas});`}
+                  >
+                    <RackPosition posicion={posicion} wine={wine} vinotecaId={vinotecaId} />
+                  </div>
+                );
+              })}
+            </div>
+            {/* Balda de madera bajo cada fila */}
+            <div
+              class="mt-2 h-2.5 rounded-sm border-t border-wood-600/60 bg-gradient-to-b from-wood-800 to-wood-950 shadow-md sm:mt-3"
+            />
+          </div>
+        ))
+      }
+    </div>
   </div>
 </section>

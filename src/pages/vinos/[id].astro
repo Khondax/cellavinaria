@@ -1,0 +1,168 @@
+---
+import { getCollection, render } from 'astro:content';
+import { Image } from 'astro:assets';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import BottleIcon from '../../components/BottleIcon.astro';
+import MiniRack from '../../components/MiniRack';
+import { vinotecas, getRowCol } from '../../data/vinotecas';
+import { inventory } from '../../data/inventory';
+import { variedadMeta, formatPrecio, formatFechaToma } from '../../lib/wine';
+import type { VinotecaId } from '../../data/inventory';
+
+export async function getStaticPaths() {
+  const wines = await getCollection('wines');
+  return wines.map((wine) => ({ params: { id: wine.id }, props: { wine } }));
+}
+
+const { wine } = Astro.props;
+const { Content } = await render(wine);
+const meta = variedadMeta(wine.data.variedad);
+const hasResena = Boolean(wine.body && wine.body.trim());
+
+// Ubicaciones en las vinotecas (un mismo vino puede estar en varias posiciones)
+interface Loc {
+  nombre: string;
+  posicion: number;
+  fila: number;
+  columna: number;
+  columnas: number;
+  layout: number[][];
+}
+const locations: Loc[] = [];
+for (const vid of Object.keys(inventory) as VinotecaId[]) {
+  for (const [pos, slug] of Object.entries(inventory[vid])) {
+    if (slug === wine.id) {
+      const v = vinotecas[vid];
+      const { fila, columna } = getRowCol(Number(pos), v);
+      locations.push({
+        nombre: v.nombre,
+        posicion: Number(pos),
+        fila,
+        columna,
+        columnas: v.columnas,
+        layout: v.layout,
+      });
+    }
+  }
+}
+---
+
+<BaseLayout
+  title={`${wine.data.nombre} · Cella Vinaria`}
+  description={`${wine.data.nombre} — ${wine.data.bodega}, ${wine.data.region} (${wine.data.pais}).`}
+>
+  <div class="mx-auto max-w-4xl px-4 py-10 sm:px-6">
+    <a
+      href="/vinos"
+      class="mb-6 inline-flex items-center gap-1 text-sm font-medium text-wine-700 hover:text-wine-900"
+    >
+      <span aria-hidden="true">←</span> Volver al listado
+    </a>
+
+    <article class="reveal">
+      <div class="grid gap-8 md:grid-cols-[16rem_1fr]">
+        <!-- Foto -->
+        <div
+          class="flex items-center justify-center rounded-2xl border border-cream-300 bg-gradient-to-b from-white to-cream-100 p-6 shadow-sm"
+        >
+          {
+            wine.data.imagen ? (
+              <Image
+                src={wine.data.imagen}
+                alt={`Botella de ${wine.data.nombre}`}
+                class="max-h-[22rem] w-auto object-contain drop-shadow-md"
+              />
+            ) : (
+              <BottleIcon class={`h-64 w-auto ${meta.glass}`} />
+            )
+          }
+        </div>
+
+        <!-- Datos -->
+        <div class="flex flex-col">
+          <span
+            class={`mb-2 inline-flex w-fit items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs font-semibold ${meta.badge}`}
+          >
+            <span class={`h-1.5 w-1.5 rounded-full ${meta.dot}`} />
+            {meta.label}
+          </span>
+
+          <h1 class="font-display text-4xl font-semibold leading-tight text-wine-900">
+            {wine.data.nombre}
+          </h1>
+          <p class="mt-1 text-lg text-wine-900/60">{wine.data.bodega}</p>
+
+          <dl class="mt-6 grid grid-cols-2 gap-x-4 gap-y-3 text-sm">
+            <div>
+              <dt class="text-xs uppercase tracking-wide text-wine-900/45">Uva</dt>
+              <dd class="capitalize text-wine-900/85">{wine.data.tipoUva}</dd>
+            </div>
+            <div>
+              <dt class="text-xs uppercase tracking-wide text-wine-900/45">Origen</dt>
+              <dd class="text-wine-900/85">{wine.data.region}, {wine.data.pais}</dd>
+            </div>
+            <div>
+              <dt class="text-xs uppercase tracking-wide text-wine-900/45">
+                Ventana de consumo
+              </dt>
+              <dd class="tabular-nums text-wine-900/85">
+                {formatFechaToma(wine.data.fechaToma)}
+              </dd>
+            </div>
+            <div>
+              <dt class="text-xs uppercase tracking-wide text-wine-900/45">Puntuación</dt>
+              <dd class="font-semibold text-gold-600">
+                {wine.data.puntuacion != null ? `★ ${wine.data.puntuacion}/10` : '—'}
+              </dd>
+            </div>
+          </dl>
+
+          <p class="mt-6 font-display text-3xl font-semibold text-wine-700">
+            {wine.data.precio != null ? formatPrecio(wine.data.precio) : '—'}
+          </p>
+        </div>
+      </div>
+
+      <!-- Ubicación -->
+      {
+        locations.length > 0 && (
+          <section class="mt-10 border-t border-cream-300 pt-6">
+            <h2 class="mb-4 font-display text-xl font-semibold text-wine-800">
+              Ubicación en bodega
+            </h2>
+            <div class="flex flex-wrap gap-5">
+              {locations.map((loc) => (
+                <div class="flex items-center gap-4 rounded-xl border border-cream-300 bg-white/70 p-4">
+                  <div class="w-24">
+                    <MiniRack layout={loc.layout} posicion={loc.posicion} columnas={loc.columnas} />
+                  </div>
+                  <div class="text-sm">
+                    <p class="font-medium text-wine-800">{loc.nombre}</p>
+                    <p class="text-wine-900/60">
+                      Fila {loc.fila}, Columna {loc.columna}
+                    </p>
+                    <p class="text-xs text-wine-900/45">Posición {loc.posicion}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        )
+      }
+
+      <!-- Reseña / notas de cata -->
+      <section class="mt-10 border-t border-cream-300 pt-6">
+        <h2 class="mb-4 font-display text-xl font-semibold text-wine-800">Notas de cata</h2>
+        {
+          hasResena ? (
+            <div class="max-w-prose text-wine-950/80 [&_h2]:mt-6 [&_h2]:font-display [&_h2]:text-lg [&_h2]:font-semibold [&_h2]:text-wine-800 [&_h3]:mt-4 [&_h3]:font-semibold [&_h3]:text-wine-800 [&_li]:mb-1 [&_p]:mb-3 [&_strong]:font-semibold [&_strong]:text-wine-900 [&_ul]:mb-3 [&_ul]:list-disc [&_ul]:pl-5">
+              <Content />
+            </div>
+          ) : (
+            <p class="text-wine-900/50 italic">Sin notas de cata todavía.</p>
+          )
+        }
+      </section>
+    </article>
+  </div>
+</BaseLayout>

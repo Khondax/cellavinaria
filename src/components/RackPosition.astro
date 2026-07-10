@@ -1,6 +1,10 @@
 ---
+import { Image } from 'astro:assets';
 import type { Wine } from '../types/wine';
 import type { VinotecaId } from '../data/inventory';
+import { vinotecas, getRowCol } from '../data/vinotecas';
+import { variedadMeta, formatFechaToma } from '../lib/wine';
+import BottleIcon from './BottleIcon.astro';
 
 interface Props {
   posicion: number;
@@ -9,32 +13,63 @@ interface Props {
 }
 
 const { posicion, wine, vinotecaId } = Astro.props;
+const { fila, columna } = getRowCol(posicion, vinotecas[vinotecaId]);
+
+const meta = wine ? variedadMeta(wine.data.variedad) : null;
+const titleText = wine
+  ? `${wine.data.nombre} · ${wine.data.bodega} · ${meta!.label}` +
+    ` · Fila ${fila}, Columna ${columna}`
+  : `Posición ${posicion} · vacía`;
 ---
 
-<div
-  class={`
-    aspect-square border-2 rounded-lg p-2 cursor-pointer transition-all
-    ${wine
-      ? 'bg-white border-wine-300 hover:border-wine-500 hover:shadow-lg'
-      : 'bg-gray-50 border-gray-200 hover:border-gray-300'}
-  `}
-  data-wine-slug={wine?.slug}
-  data-posicion={posicion}
-  data-vinoteca={vinotecaId}
->
-  {wine ? (
-    <div class="flex flex-col items-center justify-center h-full">
-      <div class="w-16 h-16 mb-1 flex items-center justify-center bg-wine-100 rounded">
-        <span class="text-3xl">🍷</span>
-      </div>
-      <span class="text-xs font-medium text-center line-clamp-2">
+{
+  wine && meta ? (
+    <a
+      href={`/vinos/${wine.id}`}
+      class="group relative flex aspect-square flex-col gap-2 rounded-lg border border-cream-300 bg-gradient-to-b from-white to-cream-100 p-1 shadow-md ring-1 ring-black/5 transition-transform duration-200 hover:-translate-y-0.5 hover:shadow-lg"
+      aria-label={`Ver ficha de ${wine.data.nombre}`}
+      title={titleText}
+      data-wine-slug={wine.id}
+      data-posicion={posicion}
+      data-vinoteca={vinotecaId}
+    >
+      {/* Nombre (arriba, todo el ancho) */}
+      <h3 class="line-clamp-2 text-center font-display text-[15px] font-semibold leading-tight text-wine-900">
         {wine.data.nombre}
-      </span>
-      <span class="text-xs text-gray-500">Pos. {posicion}</span>
-    </div>
+      </h3>
+
+      {/* Fila: imagen (izquierda) + datos (derecha) */}
+      <div class="flex min-h-0 flex-1 items-stretch gap-2">
+        {wine.data.imagen ? (
+          <Image
+            src={wine.data.imagen}
+            alt={`Botella de ${wine.data.nombre}`}
+            class="h-full w-auto max-w-[60%] flex-shrink-0 self-center object-contain"
+          />
+        ) : (
+          <BottleIcon class={`h-full w-auto flex-shrink-0 self-center ${meta.glass}`} />
+        )}
+
+        <div class="flex h-full min-w-0 flex-1 flex-col justify-between py-1 text-left">
+          <p class="text-[13px] leading-tight text-wine-900/65">
+            {wine.data.bodega}
+          </p>
+          <span class="inline-flex items-center gap-1.5 text-[13px] font-semibold text-wine-900/75">
+            <span class={`h-2.5 w-2.5 flex-shrink-0 rounded-full ${meta.dot}`} />
+            {meta.label}
+          </span>
+          <span class="text-[13px] font-medium text-wine-900/60 tabular-nums">
+            {formatFechaToma(wine.data.fechaToma)}
+          </span>
+        </div>
+      </div>
+    </a>
   ) : (
-    <div class="flex items-center justify-center h-full text-gray-400">
-      <span class="text-sm font-mono">{posicion}</span>
+    <div
+      class="flex aspect-square items-center justify-center rounded-lg bg-wood-950/50 shadow-[inset_0_2px_8px_rgba(0,0,0,0.55)] ring-1 ring-black/20"
+      title={titleText}
+    >
+      <span class="text-[11px] font-medium text-cream-100/30 tabular-nums">{posicion}</span>
     </div>
-  )}
-</div>
+  )
+}

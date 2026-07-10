@@ -1,4 +1,6 @@
 ---
+import '../styles/global.css';
+
 interface Props {
   title: string;
   description?: string;
@@ -6,6 +8,12 @@ interface Props {
 
 const { title, description = 'Gestión personal de bodega de vinos' } = Astro.props;
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+const currentPath = Astro.url.pathname;
+
+const navLinks = [
+  { href: '/', label: 'Mis Vinotecas' },
+  { href: '/vinos', label: 'Listado de Vinos' },
+];
 ---
 
 <!doctype html>
@@ -15,45 +23,94 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content={description} />
     <link rel="canonical" href={canonicalURL} />
+    <meta name="theme-color" content="#7d1d42" />
+
+    <!-- Fuentes -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..900;1,9..144,400..600&family=Figtree:wght@300..700&display=swap"
+      rel="stylesheet"
+    />
 
     <!-- Open Graph -->
     <meta property="og:type" content="website" />
     <meta property="og:url" content={canonicalURL} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
-    <meta property="og:site_name" content="Cellavinaria" />
+    <meta property="og:site_name" content="Cella Vinaria" />
 
     <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:card" content="summary" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
 
     <title>{title}</title>
   </head>
-  <body class="bg-gray-50 text-gray-900 min-h-screen">
-    <nav class="bg-white shadow-sm border-b border-gray-200">
-      <div class="container mx-auto px-4 py-4">
-        <div class="flex items-center justify-between">
-          <a href="/" class="text-2xl font-bold text-wine-700 hover:text-wine-900">
-            Cellavinaria
-          </a>
-          <div class="flex gap-6">
-            <a href="/" class="text-gray-600 hover:text-wine-700 transition-colors">
-              Mis Vinotecas
-            </a>
-            <a href="/vinos" class="text-gray-600 hover:text-wine-700 transition-colors">
-              Listado de Vinos
-            </a>
-          </div>
-        </div>
+  <body class="min-h-screen flex flex-col">
+    <a
+      href="#contenido"
+      class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-lg focus:bg-wine-700 focus:px-4 focus:py-2 focus:text-cream-50"
+    >
+      Saltar al contenido
+    </a>
+
+    <header
+      class="sticky top-0 z-40 border-b border-cream-300/70 bg-cream-100/80 backdrop-blur-md"
+    >
+      <div class="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6">
+        <a
+          href="/"
+          class="group flex items-baseline gap-2 rounded-sm"
+          aria-label="Cellavinaria, inicio"
+        >
+          <span
+            class="font-display text-2xl font-semibold tracking-tight text-wine-800 transition-colors group-hover:text-wine-600"
+          >
+            Cella Vinaria
+          </span>
+          <span class="hidden text-lg leading-none text-gold-500 sm:inline">✦</span>
+        </a>
+
+        <nav aria-label="Navegación principal">
+          <ul class="flex items-center gap-1 sm:gap-2">
+            {
+              navLinks.map(({ href, label }) => {
+                const isActive =
+                  href === '/' ? currentPath === '/' : currentPath.startsWith(href);
+                return (
+                  <li>
+                    <a
+                      href={href}
+                      aria-current={isActive ? 'page' : undefined}
+                      class:list={[
+                        'rounded-full px-3 py-1.5 text-sm font-medium transition-colors sm:px-4',
+                        isActive
+                          ? 'bg-wine-700 text-cream-50'
+                          : 'text-wine-900/70 hover:bg-wine-100 hover:text-wine-800',
+                      ]}
+                    >
+                      {label}
+                    </a>
+                  </li>
+                );
+              })
+            }
+          </ul>
+        </nav>
       </div>
-    </nav>
+    </header>
 
-    <slot />
+    <main id="contenido" class="flex-1">
+      <slot />
+    </main>
 
-    <footer class="mt-16 bg-white border-t border-gray-200">
-      <div class="container mx-auto px-4 py-8 text-center text-gray-600 text-sm">
-        <p>&copy; {new Date().getFullYear()} Cellavinaria. Gestión personal de bodega de vinos.</p>
+    <footer class="mt-20 border-t border-cream-300/70 bg-cream-50/60">
+      <div
+        class="mx-auto flex max-w-6xl flex-col items-center gap-1 px-4 py-8 text-center text-sm text-wine-900/60 sm:px-6"
+      >
+        <p class="font-display text-base text-wine-800">Cella Vinaria ✦</p>
+        <p>&copy; {new Date().getFullYear()} · Gestión personal de bodega de vinos.</p>
       </div>
     </footer>
   </body>
