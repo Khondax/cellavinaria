@@ -26,41 +26,60 @@ const titleText = wine
   wine && meta ? (
     <a
       href={`/vinos/${wine.id}`}
-      class="group relative flex aspect-square flex-col gap-2 rounded-lg border border-cream-300 bg-gradient-to-b from-white to-cream-100 p-1 shadow-md ring-1 ring-black/5 transition-transform duration-200 hover:-translate-y-0.5 hover:shadow-lg"
+      class="group relative block aspect-square rounded-lg border border-cream-300 bg-gradient-to-b from-white to-cream-100 p-1 shadow-md ring-1 ring-black/5 transition-transform duration-200 hover:-translate-y-0.5 hover:shadow-lg"
       aria-label={`Ver ficha de ${wine.data.nombre}`}
       title={titleText}
       data-wine-slug={wine.id}
       data-posicion={posicion}
       data-vinoteca={vinotecaId}
     >
-      {/* Nombre (arriba, todo el ancho) */}
-      <h3 class="line-clamp-2 text-center font-display text-[15px] font-semibold leading-tight text-wine-900">
-        {wine.data.nombre}
-      </h3>
-
-      {/* Fila: imagen (izquierda) + datos (derecha) */}
-      <div class="flex min-h-0 flex-1 items-stretch gap-2">
+      {/* Compacta (móvil, < 810px): solo la botella + nº de posición */}
+      <div class="flex h-full w-full items-center justify-center min-[810px]:hidden">
         {wine.data.imagen ? (
           <Image
             src={wine.data.imagen}
             alt={`Botella de ${wine.data.nombre}`}
-            class="h-full w-auto max-w-[60%] flex-shrink-0 self-center object-contain"
+            class="max-h-full max-w-full object-contain"
           />
         ) : (
-          <BottleIcon class={`h-full w-auto flex-shrink-0 self-center ${meta.glass}`} />
+          <BottleIcon class={`h-full w-auto ${meta.glass}`} />
         )}
+        <span class="absolute right-1 top-1 rounded bg-wine-800/70 px-1 text-[9px] font-semibold text-cream-50 tabular-nums">
+          {posicion}
+        </span>
+      </div>
 
-        <div class="flex h-full min-w-0 flex-1 flex-col justify-between py-1 text-left">
-          <p class="text-[13px] leading-tight text-wine-900/65">
-            {wine.data.bodega}
-          </p>
-          <span class="inline-flex items-center gap-1.5 text-[13px] font-semibold text-wine-900/75">
-            <span class={`h-2.5 w-2.5 flex-shrink-0 rounded-full ${meta.dot}`} />
-            {meta.label}
-          </span>
-          <span class="text-[13px] font-medium text-wine-900/60 tabular-nums">
-            {formatFechaToma(wine.data.fechaToma)}
-          </span>
+      {/* Completa (≥ 810px): nombre + imagen + datos */}
+      <div class="hidden h-full w-full flex-col gap-2 min-[810px]:flex">
+        {/* Nombre (arriba, todo el ancho) */}
+        <h3 class="line-clamp-2 text-center font-display text-[15px] font-semibold leading-tight text-wine-900">
+          {wine.data.nombre}
+        </h3>
+
+        {/* Fila: imagen (izquierda) + datos (derecha) */}
+        <div class="flex min-h-0 flex-1 items-stretch gap-2">
+          {wine.data.imagen ? (
+            <Image
+              src={wine.data.imagen}
+              alt={`Botella de ${wine.data.nombre}`}
+              class="h-full w-auto max-w-[60%] flex-shrink-0 self-center object-contain"
+            />
+          ) : (
+            <BottleIcon class={`h-full w-auto flex-shrink-0 self-center ${meta.glass}`} />
+          )}
+
+          <div class="flex h-full min-w-0 flex-1 flex-col justify-between py-1 text-left">
+            <p class="text-[13px] leading-tight text-wine-900/65">
+              {wine.data.bodega}
+            </p>
+            <span class="inline-flex items-center gap-1.5 text-[13px] font-semibold text-wine-900/75">
+              <span class={`h-2.5 w-2.5 flex-shrink-0 rounded-full ${meta.dot}`} />
+              {meta.label}
+            </span>
+            <span class="text-[13px] font-medium text-wine-900/60 tabular-nums">
+              {formatFechaToma(wine.data.fechaToma)}
+            </span>
+          </div>
         </div>
       </div>
     </a>
