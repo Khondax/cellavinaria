@@ -23,6 +23,7 @@ Gestión personal de bodega de vinos con **Astro 7 + Tailwind CSS + Preact**. Vi
 - 
 
 ## Herramientas:
+- `Codegraph` -> Para ahorrar tokens
 - `Improve` -> Para elaborar planes de mejora (Shadcn/improve)
 
 ## ✨ Características Implementadas
