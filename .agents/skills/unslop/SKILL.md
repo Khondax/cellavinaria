@@ -1,7 +1,6 @@
 ---
 name: unslop
 description: Cut AI tells from any writing except when writing or reviewing readmes, PR descriptions, or commit messages.
-disable-model-invocation: true
 ---
 
 # Unslop

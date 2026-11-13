@@ -18,6 +18,7 @@ Gestión personal de bodega de vinos con **Astro 7 + Tailwind CSS + Preact**. Vi
 - `accessibility` (addyosmani/web-quality-skills)
 - `astro` (astrolicious/agent-skills)
 - `frontend-design` (anthropics/skills)
+- `design-taste-frontend` (Leonxlnx/taste-skill; prototipos y exploraciones puntuales)
 
 ## MCPs:
 - 
