@@ -17,7 +17,7 @@ En repositorios indexados por CodeGraph (existe un directorio `.codegraph/` en l
 - Si está disponible, usa la herramienta MCP `codegraph_explore` para obtener los símbolos relevantes y sus rutas de llamadas, incluidos los saltos de despacho dinámico. Incluye en la consulta el archivo o símbolo que quieras inspeccionar para obtener su fuente actual con números de línea.
 - Si la herramienta indica que un resultado está diferido, cárgalo mediante la herramienta de búsqueda de herramientas disponible.
 - Desde la terminal, `codegraph explore "<símbolos o pregunta>"` ofrece una alternativa.
-- Si no existe `.codegraph/`, omite CodeGraph. La decisión de indexar corresponde al usuario.
+- Si no existe `.codegraph/`, inicializa CodeGraph para indexar el código.
 
 ## Forma de trabajar
 
